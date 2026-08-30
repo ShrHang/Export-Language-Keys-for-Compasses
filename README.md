@@ -2,6 +2,8 @@
 
 A Minecraft mod for exporting biome and structure language keys for use with Nature's Compass and Explorer's Compass.
 
+So that you can easily translate the mod's language keys into your own language.
+
 Just run the command to generate a JSON file containing the requested language keys:
 ```text
 /elkfc export all missing
