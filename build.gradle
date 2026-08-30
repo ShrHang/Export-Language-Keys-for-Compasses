@@ -1,20 +1,8 @@
-buildscript {
-    repositories {
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
 plugins {
     id 'eclipse'
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
 }
-
-apply plugin: 'org.spongepowered.mixin'
 
 group = mod_group_id
 version = mod_version
@@ -68,12 +56,6 @@ minecraft {
     }
 }
 
-mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
-
-    config "${mod_id}.mixins.json"
-}
-
 repositories {
     exclusiveContent {
         forRepository {
@@ -91,9 +73,11 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation fg.deobf("maven.modrinth:RV1qfVQ8:7ZdJbCOx") // Explorer
-    implementation fg.deobf("maven.modrinth:fPetb5Kh:eRSDvCjN") // Nature
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    compileOnly fg.deobf("maven.modrinth:RV1qfVQ8:7ZdJbCOx") // Explorer
+    runtimeOnly fg.deobf("maven.modrinth:RV1qfVQ8:7ZdJbCOx")
+
+    compileOnly fg.deobf("maven.modrinth:fPetb5Kh:eRSDvCjN") // Nature
+    runtimeOnly fg.deobf("maven.modrinth:fPetb5Kh:eRSDvCjN")
 }
 
 tasks.named('processResources', ProcessResources).configure {

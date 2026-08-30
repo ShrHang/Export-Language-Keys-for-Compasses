@@ -13,15 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public record ClientboundExportPacket(String target, String mode, String language, List<LangKeyEntry> entries) {
+public record ClientsideExportPacket(String target, String mode, String language, List<LangKeyEntry> entries) {
 
     private static final int MAX_ENTRIES = 100_000;
 
-    public ClientboundExportPacket {
+    public ClientsideExportPacket {
         entries = List.copyOf(entries);
     }
 
-    public static ClientboundExportPacket decode(FriendlyByteBuf buffer) {
+    public static ClientsideExportPacket decode(FriendlyByteBuf buffer) {
         String target = buffer.readUtf(32);
         String mode = buffer.readUtf(32);
         String language = buffer.readUtf(32);
@@ -40,7 +40,7 @@ public record ClientboundExportPacket(String target, String mode, String languag
             entries.add(new LangKeyEntry(key, fallback, kind, sourceId, sourceModId));
         }
 
-        return new ClientboundExportPacket(target, mode, language, entries);
+        return new ClientsideExportPacket(target, mode, language, entries);
     }
 
     public void encode(FriendlyByteBuf buffer) {
@@ -58,7 +58,7 @@ public record ClientboundExportPacket(String target, String mode, String languag
         }
     }
 
-    public static void handle(ClientboundExportPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handle(ClientsideExportPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(
                 Dist.CLIENT,

@@ -1,0 +1,7 @@
+{
+  "command.export_language_keys_for_compasses.language.invalid": "无效的语言选择器：%s",
+  "command.export_language_keys_for_compasses.entries.empty": "没有为目标“%s”收集到任何语言键。",
+  "message.export_language_keys_for_compasses.export.success": "已为 %2$s 导出 %1$s 个语言键至 %3$s",
+  "message.export_language_keys_for_compasses.export.failure": "导出语言键失败：%s",
+  "message.export_language_keys_for_compasses.language.unavailable": "未知或不可用的语言：%s"
+}

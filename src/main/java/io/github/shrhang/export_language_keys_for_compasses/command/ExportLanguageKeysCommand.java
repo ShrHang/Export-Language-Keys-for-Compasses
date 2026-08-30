@@ -4,10 +4,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.shrhang.export_language_keys_for_compasses.ELKFCompasses;
-import io.github.shrhang.export_language_keys_for_compasses.compat.ExplorersCompassCollector;
-import io.github.shrhang.export_language_keys_for_compasses.compat.NaturesCompassCollector;
+import io.github.shrhang.export_language_keys_for_compasses.collector.LanguageKeyCollector;
 import io.github.shrhang.export_language_keys_for_compasses.export.LangKeyEntry;
-import io.github.shrhang.export_language_keys_for_compasses.network.ClientboundExportPacket;
+import io.github.shrhang.export_language_keys_for_compasses.network.ClientsideExportPacket;
 import io.github.shrhang.export_language_keys_for_compasses.network.ExportNetwork;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -16,20 +15,15 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Mod.EventBusSubscriber(modid = ELKFCompasses.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class ExportLanguageKeysCommand {
 
-    private static final String NATURES_COMPASS_MOD_ID = "naturescompass";
-    private static final String EXPLORERS_COMPASS_MOD_ID = "explorerscompass";
-
-    private ExportLanguageKeysCommand() {
-    }
+    private static final Pattern LANGUAGE_SELECTOR = Pattern.compile("[A-Za-z0-9_-]+");
 
     @SubscribeEvent
     public static void registerCommands(RegisterCommandsEvent event) {
@@ -40,7 +34,7 @@ public final class ExportLanguageKeysCommand {
 
         event.getDispatcher().register(
                 Commands.literal("elkfc")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> source.getEntity() instanceof ServerPlayer)
                         .then(export)
         );
     }
@@ -64,51 +58,35 @@ public final class ExportLanguageKeysCommand {
     }
 
     private static int export(CommandSourceStack source, String target, String mode, String language) throws CommandSyntaxException {
-        if (!language.isEmpty() && (language.length() > 32 || !language.matches("[A-Za-z0-9_-]+"))) {
-            source.sendFailure(Component.literal("Invalid language selector: " + language));
+        if (!language.isEmpty() && (language.length() > 32 || !LANGUAGE_SELECTOR.matcher(language).matches())) {
+            source.sendFailure(Component.translatableWithFallback(
+                    "command.export_language_keys_for_compasses.language.invalid",
+                    "Invalid language selector: %s",
+                    language
+            ));
             return 0;
         }
 
         ServerPlayer player = source.getPlayerOrException();
-        if (!ExportNetwork.isPresent(player.connection.connection)) {
-            source.sendFailure(Component.literal("The executing player's client does not have this mod's export channel."));
+        if (!ExportNetwork.isClientInstalled(player)) {
+            source.sendFailure(Component.literal(
+                    "The executing player's client does not have mod '" + ELKFCompasses.MODID + "' installed."
+            ));
             return 0;
         }
 
         ServerLevel level = source.getLevel();
-        List<LangKeyEntry> entries = collectEntries(source, level, target);
+        List<LangKeyEntry> entries = LanguageKeyCollector.collect(level, target);
         if (entries.isEmpty()) {
-            source.sendFailure(Component.literal("No language keys were collected for target '" + target + "'."));
+            source.sendFailure(Component.translatableWithFallback(
+                    "command.export_language_keys_for_compasses.entries.empty",
+                    "No language keys were collected for target '%s'.",
+                    target
+            ));
             return 0;
         }
 
-        ExportNetwork.sendTo(player, new ClientboundExportPacket(target, mode, language, entries));
-        source.sendSuccess(
-                () -> Component.literal("Sent " + entries.size() + " candidate language keys to the client for export."),
-                false
-        );
+        ExportNetwork.sendExport(player, new ClientsideExportPacket(target, mode, language, entries));
         return entries.size();
-    }
-
-    private static List<LangKeyEntry> collectEntries(CommandSourceStack source, ServerLevel level, String target) {
-        List<LangKeyEntry> entries = new ArrayList<>();
-
-        if ("biome".equals(target) || "all".equals(target)) {
-            if (ModList.get().isLoaded(NATURES_COMPASS_MOD_ID)) {
-                entries.addAll(NaturesCompassCollector.collect(level));
-            } else if ("biome".equals(target)) {
-                source.sendFailure(Component.literal("Nature's Compass is not loaded; biome export is unavailable."));
-            }
-        }
-
-        if ("structure".equals(target) || "all".equals(target)) {
-            if (ModList.get().isLoaded(EXPLORERS_COMPASS_MOD_ID)) {
-                entries.addAll(ExplorersCompassCollector.collect(level));
-            } else if ("structure".equals(target)) {
-                source.sendFailure(Component.literal("Explorer's Compass is not loaded; structure export is unavailable."));
-            }
-        }
-
-        return entries;
     }
 }

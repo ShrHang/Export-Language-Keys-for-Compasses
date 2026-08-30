@@ -3,11 +3,12 @@ package io.github.shrhang.export_language_keys_for_compasses.client;
 import com.mojang.logging.LogUtils;
 import io.github.shrhang.export_language_keys_for_compasses.config.ConfigHandler;
 import io.github.shrhang.export_language_keys_for_compasses.export.LangKeyEntry;
-import io.github.shrhang.export_language_keys_for_compasses.export.LangKeyWriter;
-import io.github.shrhang.export_language_keys_for_compasses.network.ClientboundExportPacket;
+import io.github.shrhang.export_language_keys_for_compasses.network.ClientsideExportPacket;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.LanguageManager;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -29,7 +30,7 @@ public final class ClientExportHandler {
     private ClientExportHandler() {
     }
 
-    public static void handle(ClientboundExportPacket packet) {
+    public static void handle(ClientsideExportPacket packet) {
         Minecraft minecraft = Minecraft.getInstance();
         String language = resolveLanguage(minecraft, packet.language());
         if (language == null) {
@@ -57,17 +58,25 @@ public final class ClientExportHandler {
         );
 
         try {
-            Path output = LangKeyWriter.createOutputPath(
+            Path output = ExportFileWriter.write(
                     FMLPaths.GAMEDIR.get(),
                     language,
                     packet.target(),
-                    packet.mode()
+                    packet.mode(),
+                    translations
             );
-            LangKeyWriter.writeJson(output, translations);
-            sendMessage("Exported " + translations.size() + " language keys for " + language + " to " + output.toAbsolutePath());
+            sendMessage(Component.translatable(
+                    "message.export_language_keys_for_compasses.export.success",
+                    translations.size(),
+                    language,
+                    createFileLink(output)
+            ));
         } catch (IOException exception) {
             LOGGER.error("Failed to export language keys", exception);
-            sendMessage("Failed to export language keys: " + exception.getMessage());
+            sendMessage(Component.translatable(
+                    "message.export_language_keys_for_compasses.export.failure",
+                    exception.getMessage()
+            ));
         }
     }
 
@@ -106,17 +115,30 @@ public final class ClientExportHandler {
 
         String normalizedLanguage = language.toLowerCase(Locale.ROOT);
         if (minecraft.getLanguageManager().getLanguage(normalizedLanguage) == null) {
-            sendMessage("Unknown or unavailable language: " + language);
+            sendMessage(Component.translatable(
+                    "message.export_language_keys_for_compasses.language.unavailable",
+                    language
+            ));
             return null;
         }
 
         return normalizedLanguage;
     }
 
-    private static void sendMessage(String message) {
+    private static Component createFileLink(Path output) {
+        Path absoluteOutput = output.toAbsolutePath().normalize();
+        return Component.literal(output.getFileName().toString())
+                .withStyle(ChatFormatting.UNDERLINE)
+                .withStyle(style -> style.withClickEvent(new ClickEvent(
+                        ClickEvent.Action.OPEN_FILE,
+                        absoluteOutput.toString()
+                )));
+    }
+
+    private static void sendMessage(Component message) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player != null) {
-            minecraft.player.displayClientMessage(Component.literal(message), false);
+            minecraft.player.displayClientMessage(message, false);
         }
     }
 }

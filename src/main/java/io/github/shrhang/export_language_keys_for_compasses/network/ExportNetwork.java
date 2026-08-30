@@ -4,7 +4,9 @@ import io.github.shrhang.export_language_keys_for_compasses.ELKFCompasses;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.ConnectionData;
 import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
@@ -23,9 +25,6 @@ public final class ExportNetwork {
 
     private static boolean registered;
 
-    private ExportNetwork() {
-    }
-
     public static void register() {
         if (registered) {
             return;
@@ -33,20 +32,26 @@ public final class ExportNetwork {
 
         CHANNEL.registerMessage(
                 0,
-                ClientboundExportPacket.class,
-                ClientboundExportPacket::encode,
-                ClientboundExportPacket::decode,
-                ClientboundExportPacket::handle,
+                ClientsideExportPacket.class,
+                ClientsideExportPacket::encode,
+                ClientsideExportPacket::decode,
+                ClientsideExportPacket::handle,
                 Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
         registered = true;
     }
 
-    public static boolean isPresent(Connection connection) {
-        return CHANNEL.isRemotePresent(connection);
+    public static boolean isClientInstalled(ServerPlayer player) {
+        Connection connection = player.connection.connection;
+        if (connection.isMemoryConnection()) {
+            return true;
+        }
+
+        ConnectionData connectionData = NetworkHooks.getConnectionData(connection);
+        return connectionData != null && connectionData.getModList().contains(ELKFCompasses.MODID);
     }
 
-    public static void sendTo(ServerPlayer player, ClientboundExportPacket packet) {
+    public static void sendExport(ServerPlayer player, ClientsideExportPacket packet) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 }

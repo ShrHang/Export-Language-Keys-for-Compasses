@@ -13,9 +13,6 @@ public final class ConfigHandler {
         CLIENT_SPEC = builder.build();
     }
 
-    private ConfigHandler() {
-    }
-
     public static final class Client {
 
         public final ForgeConfigSpec.ConfigValue<String> defaultLanguage;
