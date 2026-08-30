@@ -1,0 +1,7 @@
+{
+  "command.export_language_keys_for_compasses.language.invalid": "Invalid language selector: %s",
+  "command.export_language_keys_for_compasses.entries.empty": "No language keys were collected for target '%s'.",
+  "message.export_language_keys_for_compasses.export.success": "Exported %1$s language keys for %2$s to %3$s",
+  "message.export_language_keys_for_compasses.export.failure": "Failed to export language keys: %s",
+  "message.export_language_keys_for_compasses.language.unavailable": "Unknown or unavailable language: %s"
+}
