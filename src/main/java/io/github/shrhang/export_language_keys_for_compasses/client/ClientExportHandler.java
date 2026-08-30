@@ -7,7 +7,6 @@ import io.github.shrhang.export_language_keys_for_compasses.network.ClientsideEx
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.ClientLanguage;
-import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
