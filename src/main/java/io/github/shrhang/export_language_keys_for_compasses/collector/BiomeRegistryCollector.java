@@ -18,7 +18,7 @@ public final class BiomeRegistryCollector {
             ServerLevel level,
             Predicate<ResourceLocation> biomeFilter
     ) {
-        Registry<Biome> biomeRegistry = level.registryAccess().registryOrThrow(Registries.BIOME);
+        Registry<Biome> biomeRegistry = level.registryAccess().lookupOrThrow(Registries.BIOME);
         List<LangKeyEntry> entries = new ArrayList<>();
 
         for (ResourceLocation biomeId : biomeRegistry.keySet()) {

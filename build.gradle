@@ -21,6 +21,12 @@ java {
     withSourcesJar()
 }
 
+tasks.withType(JavaExec).configureEach {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
 neoForge {
     version = project.neo_version
 
@@ -82,10 +88,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly "maven.modrinth:fPetb5Kh:nFniEtJV" // Nature
-    runtimeOnly "maven.modrinth:fPetb5Kh:nFniEtJV" // Nature
-    compileOnly "maven.modrinth:RV1qfVQ8:hIJ2Ev1Q" // Explorer
-    runtimeOnly "maven.modrinth:RV1qfVQ8:hIJ2Ev1Q" // Explorer
+    compileOnly "maven.modrinth:natures-compass:${minecraft_version}-${naturecompass_version}-neoforge" // Nature
+    runtimeOnly "maven.modrinth:natures-compass:${minecraft_version}-${naturecompass_version}-neoforge" // Nature
+    compileOnly "maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-neoforge" // Explorer
+    runtimeOnly "maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-neoforge" // Explorer
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

@@ -25,7 +25,7 @@ public final class StructureRegistryCollector {
             Predicate<ResourceLocation> structureFilter,
             Map<ResourceLocation, ResourceLocation> preferredStructureGroups
     ) {
-        Registry<Structure> structureRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Registry<Structure> structureRegistry = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
         Map<ResourceLocation, ResourceLocation> registryStructureGroups = collectStructureGroups(level, structureRegistry);
         List<LangKeyEntry> entries = new ArrayList<>();
 
@@ -49,7 +49,7 @@ public final class StructureRegistryCollector {
             ServerLevel level,
             Registry<Structure> structureRegistry
     ) {
-        Registry<StructureSet> structureSetRegistry = level.registryAccess().registryOrThrow(Registries.STRUCTURE_SET);
+        Registry<StructureSet> structureSetRegistry = level.registryAccess().lookupOrThrow(Registries.STRUCTURE_SET);
         Map<ResourceLocation, ResourceLocation> structureGroups = new LinkedHashMap<>();
 
         for (StructureSet structureSet : structureSetRegistry) {
