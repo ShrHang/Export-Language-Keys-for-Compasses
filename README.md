@@ -2,7 +2,7 @@
 
 ![Icon](.idea/large_icon.png)
 
-A Minecraft mod for exporting biome and structure language keys for use with **Nature's Compass** and **Explorer's Compass**.
+A Minecraft mod for exporting biome and structure language keys for use with ***Nature's Compass*** and ***Explorer's Compass***.
 
 So that you can easily translate the mod's language keys into your own language.
 
@@ -18,4 +18,4 @@ See the [wiki](https://github.com/ShrHang/Export-Language-Keys-for-Compasses/wik
 ## Requirements
 
 - In multiplayer, the mod must be installed on both **the server** and **the player running the command**.
-- **Nature's Compass** and **Explorer's Compass** are ***OPTIONAL***. When installed, their configured blacklists are applied to the exported entries.
+- ***Nature's Compass*** and ***Explorer's Compass*** are **OPTIONAL**. When installed, their configured blacklists are applied to the exported entries.
