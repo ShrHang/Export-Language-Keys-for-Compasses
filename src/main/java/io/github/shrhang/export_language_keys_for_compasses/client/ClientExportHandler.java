@@ -129,10 +129,7 @@ public final class ClientExportHandler {
         Path absoluteOutput = output.toAbsolutePath().normalize();
         return Component.literal(output.getFileName().toString())
                 .withStyle(ChatFormatting.UNDERLINE)
-                .withStyle(style -> style.withClickEvent(new ClickEvent(
-                        ClickEvent.Action.OPEN_FILE,
-                        absoluteOutput.toString()
-                )));
+                .withStyle(style -> style.withClickEvent(new ClickEvent.OpenFile(absoluteOutput)));
     }
 
     private static void sendMessage(Component message) {
