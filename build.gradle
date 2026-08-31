@@ -81,10 +81,10 @@ repositories {
 }
 
 dependencies {
-    compileOnly "maven.modrinth:natures-compass:${minecraft_version}-${naturecompass_version}-neoforge" // Nature
-    runtimeOnly "maven.modrinth:natures-compass:${minecraft_version}-${naturecompass_version}-neoforge" // Nature
-    compileOnly "maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-neoforge" // Explorer
-    runtimeOnly "maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-neoforge" // Explorer
+    compileOnly "maven.modrinth:natures-compass:${minecraft_version}-${naturecompass_version}-neoforge"
+    runtimeOnly "maven.modrinth:natures-compass:${minecraft_version}-${naturecompass_version}-neoforge"
+    compileOnly "maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-neoforge"
+    runtimeOnly "maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-neoforge"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
