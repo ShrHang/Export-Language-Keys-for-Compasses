@@ -6,12 +6,11 @@ import io.github.shrhang.export_language_keys_for_compasses.export.LangKeyEntry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public record ClientsideExportPacket(String target, String mode, String language, List<LangKeyEntry> entries) {
 
@@ -58,12 +57,10 @@ public record ClientsideExportPacket(String target, String mode, String language
         }
     }
 
-    public static void handle(ClientsideExportPacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
-        NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(
+    public static void handle(ClientsideExportPacket packet, CustomPayloadEvent.Context context) {
+        DistExecutor.unsafeRunWhenOn(
                 Dist.CLIENT,
                 () -> () -> ClientExportHandler.handle(packet)
-        ));
-        context.setPacketHandled(true);
+        );
     }
 }

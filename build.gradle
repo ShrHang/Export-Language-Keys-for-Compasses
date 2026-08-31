@@ -17,6 +17,10 @@ java {
 }
 
 sourceSets {
+    main {
+        output.resourcesDir = layout.buildDirectory.dir('classes/java/main').get().asFile
+    }
+
     test {
         java.setSrcDirs([])
         resources.setSrcDirs([])
@@ -34,6 +38,9 @@ minecraft {
 
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
+            environment 'MOD_CLASSES', sourceSets.main.output.classesDirs.files
+                    .collect { "${mod_id}%%${it.absolutePath}" }
+                    .join(File.pathSeparator)
             mods {
                 "${mod_id}" {
                     source sourceSets.main
@@ -73,11 +80,11 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly fg.deobf("maven.modrinth:RV1qfVQ8:7ZdJbCOx") // Explorer
-    runtimeOnly fg.deobf("maven.modrinth:RV1qfVQ8:7ZdJbCOx")
+    compileOnly fg.deobf("maven.modrinth:natures-compass:${minecraft_version}-${naturescompass_version}-forge")
+    runtimeOnly fg.deobf("maven.modrinth:natures-compass:${minecraft_version}-${naturescompass_version}-forge")
 
-    compileOnly fg.deobf("maven.modrinth:fPetb5Kh:eRSDvCjN") // Nature
-    runtimeOnly fg.deobf("maven.modrinth:fPetb5Kh:eRSDvCjN")
+    compileOnly fg.deobf("maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-forge")
+    runtimeOnly fg.deobf("maven.modrinth:explorers-compass:${minecraft_version}-${explorerscompass_version}-forge")
 }
 
 tasks.named('processResources', ProcessResources).configure {

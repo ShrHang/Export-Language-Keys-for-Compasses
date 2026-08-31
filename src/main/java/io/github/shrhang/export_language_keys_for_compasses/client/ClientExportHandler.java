@@ -7,7 +7,6 @@ import io.github.shrhang.export_language_keys_for_compasses.network.ClientsideEx
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.ClientLanguage;
-import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,6 +25,7 @@ import java.util.TreeMap;
 public final class ClientExportHandler {
 
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final String DEFAULT_LANGUAGE_CODE = "en_us";
 
     private ClientExportHandler() {
     }
@@ -42,11 +42,11 @@ public final class ClientExportHandler {
                 List.of(language),
                 false
         );
-        ClientLanguage defaultLanguage = language.equals(LanguageManager.DEFAULT_LANGUAGE_CODE)
+        ClientLanguage defaultLanguage = language.equals(DEFAULT_LANGUAGE_CODE)
                 ? requestedLanguage
                 : ClientLanguage.loadFrom(
                         minecraft.getResourceManager(),
-                        List.of(LanguageManager.DEFAULT_LANGUAGE_CODE),
+                        List.of(DEFAULT_LANGUAGE_CODE),
                         false
                 );
 
